@@ -1,0 +1,40 @@
+version: '3.8'  # Docker Compose 버전
+
+services:
+  mysql:
+    image: mysql:8.0  # MySQL 8.0 컨테이너 사용
+    container_name: mysql_service
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: mytempdb
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend  # 백엔드 디렉토리에서 Dockerfile을 기반으로 빌드
+    container_name: backend_service
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mytempdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge  # 서비스 간 통신을 위한 브리지 네트워크 사용
