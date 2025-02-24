@@ -1,2 +1,1 @@
-# msa_project
-# msa_prject
+# k8s-practice
