@@ -24,6 +24,7 @@ jobs:
       # 3️⃣ Gradle 실행 권한 추가 및 빌드 (테스트 제외)
       - name: Build with Gradle
         run: |
+          cd backend
           chmod +x gradlew
           ./gradlew clean build -x test
 
