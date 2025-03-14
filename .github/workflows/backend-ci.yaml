@@ -47,3 +47,5 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG \
             --push .
+
+      # 드디어 성공..?
