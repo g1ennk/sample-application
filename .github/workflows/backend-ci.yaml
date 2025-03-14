@@ -1,70 +1,56 @@
-name: Backend CI
-
-on:
-  push:
-    branches:
-      - main  # main 브랜치에 Push될 때 실행
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ GitHub 레포지토리 코드 가져오기
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # 2️⃣ JDK 21 설치
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      # 3️⃣ Gradle 빌드 (JAR 생성)
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
           ./gradlew build
-        working-directory: backend  # backend 디렉토리에서 실행
+        working-directory: backend
 
-      # 4️⃣ Docker Buildx 설정 (멀티 아키텍처 지원)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # 5️⃣ AWS 환경 변수 설정
+      # ✅ AWS Credentials 설정 수정
       - name: Configure AWS Credentials
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         run: |
-          echo "🔑 AWS credentials set successfully"
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
 
-      # 6️⃣ AWS 환경 변수 디버깅 (문제 확인용)
       - name: Debug AWS Environment Variables
         run: |
           echo "AWS_REGION: $AWS_REGION"
           echo "AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID"
 
-      # 7️⃣ AWS ECR 로그인
+      # ✅ AWS ECR 로그인 수정
       - name: Login to Amazon ECR
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         run: |
           echo "🚀 Logging into Amazon ECR..."
-          aws ecr get-login-password --region $AWS_REGION | \
-          docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+          
+          # AWS 인증이 정상적으로 되어 있는지 확인
+          aws sts get-caller-identity
+          
+          # 로그인 수행
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+          docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
-      # 8️⃣ Docker 이미지 빌드 및 ECR 푸시
       - name: Build and Push Docker Image
         run: |
-          IMAGE_TAG=$(git rev-parse --short HEAD)  # Git SHA 기반 태그 생성
-
+          IMAGE_TAG=$(git rev-parse --short HEAD)
+          
           echo "🐳 Building & pushing Docker image..."
           docker buildx build --platform linux/amd64,linux/arm64 \
-            -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG \
-            -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest \
+            -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG \
+            -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest \
             --push ./backend
