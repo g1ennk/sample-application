@@ -1,4 +1,4 @@
-name: Backend CI/CD
+name: Backend CI
 
 on:
   push:
@@ -10,20 +10,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ GitHub Repository 코드 체크아웃
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # 2️⃣ OpenJDK 21 환경 설정
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # 3️⃣ Gradle 실행 권한 추가 및 빌드 (테스트 제외)
+      - name: Build with Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build -x test
+
+      # 4️⃣ Docker Buildx 설정
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # 5️⃣ AWS ECR 로그인
       - name: Login to Amazon ECR
         run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
+      # 6️⃣ Docker 이미지 빌드 및 ECR 푸시
       - name: Build and Push Docker Image
         run: |
-          IMAGE_TAG=$(git rev-parse --short HEAD)
-          REPO_URL=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}
-
-          docker buildx build --platform linux/amd64,linux/arm64 -t $REPO_URL:$IMAGE_TAG --push .
-          docker push $REPO_URL:$IMAGE_TAG
+          IMAGE_TAG=$(git rev-parse --short HEAD)  # Git SHA 기반 버전 생성
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG \
+            -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest \
+            --push .
