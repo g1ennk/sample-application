@@ -42,6 +42,7 @@ jobs:
       # 6️⃣ Docker 이미지 빌드 및 ECR 푸시
       - name: Build and Push Docker Image
         run: |
+          cd backend
           IMAGE_TAG=$(git rev-parse --short HEAD)  # Git SHA 기반 버전 생성
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG \
