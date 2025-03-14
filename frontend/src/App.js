@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css"; // 스타일 분리된 파일
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = "https://api.g1enn.site/users"
 
 function App() {
     const [users, setUsers] = useState([]);
