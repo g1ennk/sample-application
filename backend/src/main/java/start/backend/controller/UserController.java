@@ -28,3 +28,5 @@ public class UserController {
     }
 
 }
+
+// CI 테스트
