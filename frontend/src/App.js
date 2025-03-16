@@ -40,14 +40,14 @@ function App() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Enter name"
+                    placeholder="Enter your name"
                     className="input"
                 />
                 <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter email"
+                    placeholder="Enter your email"
                     className="input"
                 />
                 <button onClick={addUser} className="button">Add User</button>

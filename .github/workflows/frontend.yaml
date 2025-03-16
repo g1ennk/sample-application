@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'frontend/**'  # frontend 폴더 안의 파일이 변경될 때만 실행
 
 jobs:
   build-and-upload:
