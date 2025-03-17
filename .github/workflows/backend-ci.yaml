@@ -56,7 +56,7 @@ jobs:
           aws deploy create-deployment \
             --application-name weekly-backend-app \
             --deployment-group-name backend-deployment-group \
-            --revision bucket=weekly-deploy-bucket,key=deploy.zip,bundleType=zip \
+            --revision "revisionType=S3,s3Location={bucket=weekly-deploy-bucket,key=deploy.zip,bundleType=zip}" \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --region ${{ secrets.AWS_REGION }}
           
