@@ -1,14 +1,14 @@
-name: Backend CI
+name: Backend CI/CD
 
 on:
   push:
     branches:
-      - main # main 브랜치에 push될 때 실행
+      - main  # main 브랜치에 push될 때 실행
     paths:
       - 'backend/**'  # backend 폴더 안의 파일이 변경될 때만 실행
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -50,7 +50,23 @@ jobs:
             -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG \
             --push .
 
-      # 7️⃣ AWS CodeDeploy로 배포
+      # 7️⃣ 배포 ZIP 파일 생성
+      - name: Create Deployment Package
+        run: |
+          mkdir -p deploy
+          cp appspec.yml deploy/
+          cp -r scripts deploy/  # 스크립트 폴더 포함
+          cp -r backend/build/libs/*.jar deploy/  # Spring Boot JAR 포함
+          cd deploy
+          zip -r ../deploy.zip .
+          cd ..
+
+      # 8️⃣ ZIP 파일을 S3에 업로드
+      - name: Upload to S3
+        run: |
+          aws s3 cp deploy.zip s3://weekly-deploy-bucket/deploy.zip
+
+      # 9️⃣ AWS CodeDeploy로 배포 실행
       - name: Deploy with AWS CodeDeploy
         run: |
           aws deploy create-deployment \
@@ -59,4 +75,3 @@ jobs:
             --revision "revisionType=S3,s3Location={bucket=weekly-deploy-bucket,key=deploy.zip,bundleType=zip}" \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --region ${{ secrets.AWS_REGION }}
-          
