@@ -29,4 +29,4 @@ public class UserController {
 
 }
 
-// CI 테스트
+// CD 테스트
