@@ -54,7 +54,7 @@ jobs:
       - name: Create Deployment Package
         run: |
           mkdir -p deploy
-          cp appspec.yml deploy/
+          cp appspec.yaml deploy/
           cp -r scripts deploy/  # 스크립트 폴더 포함
           cp -r backend/build/libs/*.jar deploy/  # Spring Boot JAR 포함
           cd deploy
