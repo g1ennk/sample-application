@@ -12,4 +12,4 @@ public class BackendApplication {
 
 }
 
-// CI/CD 테스트
+// CodeDeploy 테스트
