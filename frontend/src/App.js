@@ -34,7 +34,7 @@ function App() {
 
     return (
         <div className="container">
-            <h1 className="title">👥 Student List</h1>
+            <h1 className="title">👥 User List</h1>
             <div className="input-container">
                 <input
                     type="text"

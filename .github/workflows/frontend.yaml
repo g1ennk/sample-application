@@ -43,7 +43,7 @@ jobs:
       - name: Upload to S3
         run: |
           cd frontend
-          aws s3 sync build/ s3://weekly-react-app --delete
+           aws s3 sync build/ s3://weekly-static-site-dev --delete
 
       # 6. CloudFront 캐시 무효화 (최신 변경 사항 즉시 반영)
       - name: Invalidate CloudFront Cache
