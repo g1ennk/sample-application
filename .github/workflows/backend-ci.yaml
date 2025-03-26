@@ -70,7 +70,7 @@ jobs:
         run: |
           aws deploy create-deployment \
             --application-name weekly-app \
-            --deployment-group-name weekly-group \
+            --deployment-group-name weekly-app-group \
             --revision "revisionType=S3,s3Location={bucket=weekly-deploy-bucket,key=deploy.zip,bundleType=zip}" \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --region ${{ secrets.AWS_REGION }}
