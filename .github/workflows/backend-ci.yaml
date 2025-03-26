@@ -70,7 +70,7 @@ jobs:
       - name: Deploy with AWS CodeDeploy
         run: |
           aws deploy create-deployment \
-            --application-name weekly-backend-app \
+            --application-name weekly-app \
             --deployment-group-name backend-deployment-group \
             --revision "revisionType=S3,s3Location={bucket=weekly-deploy-bucket,key=deploy.zip,bundleType=zip}" \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
