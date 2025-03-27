@@ -67,7 +67,6 @@ jobs:
           echo "${{ steps.vars.outputs.IMAGE_TAG }}" > deploy/image_tag.txt
           cp appspec.yml deploy/
           cp -r scripts deploy/
-          cp backend/build/libs/$JAR_NAME deploy/
           cd deploy && zip -r ../deploy.zip . && cd ..
 
       - name: Upload to S3
