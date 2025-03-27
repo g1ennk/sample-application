@@ -63,6 +63,7 @@ jobs:
 
       - name: Create Deployment Package
         run: |
+          cd ..
           mkdir -p deploy
           echo "${{ steps.vars.outputs.IMAGE_TAG }}" > deploy/image_tag.txt
           cp appspec.yml deploy/
