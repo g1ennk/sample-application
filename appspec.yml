@@ -18,12 +18,12 @@ hooks:
       timeout: 300
       runas: ubuntu
 
-  AfterInstall:
-    - location: deploy/after.sh
+  ApplicationStart:
+    - location: deploy/start.sh
       timeout: 300
       runas: ubuntu
 
-  ApplicationStart:
-    - location: deploy/start.sh
+  ValidateService:
+    - location: deploy/validate.sh
       timeout: 300
       runas: ubuntu
