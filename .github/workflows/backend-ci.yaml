@@ -53,7 +53,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          ECR_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY
+          ECR_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t $ECR_URI:${{ steps.vars.outputs.IMAGE_TAG }} \
             -t $ECR_URI:latest \
