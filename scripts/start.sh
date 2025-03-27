@@ -8,4 +8,6 @@ docker run -d \
   --name weekly-backend \
   -p 8080:8080 \
   -e SERVER_PORT=8080 \
+  -e DB_HOST=rds.g1enn.site \
+  -e DB_PORT=3306 \
   $REPO:$IMAGE_TAG
