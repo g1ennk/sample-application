@@ -10,4 +10,7 @@ docker run -d \
   -e SERVER_PORT=8080 \
   -e DB_HOST=rds.g1enn.site \
   -e DB_PORT=3306 \
+  -e DB_USER=admin \
+  -e DB_PASSWORD=alstjr11 \
+  -e DB_NAME=weekly_db \
   $REPO:$IMAGE_TAG
