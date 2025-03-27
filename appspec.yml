@@ -4,6 +4,8 @@ os: linux
 files:
   - source: /
     destination: /home/ubuntu/app
+    exclude:
+      - scripts/*
 
 hooks:
   BeforeInstall:
