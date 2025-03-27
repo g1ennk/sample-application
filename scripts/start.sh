@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE_TAG=$(cat /home/ubuntu/deploy/image_tag.txt)
+IMAGE_TAG=$(cat /home/ubuntu/image_tag.txt)
 REPO=221082195716.dkr.ecr.ap-northeast-2.amazonaws.com/weekly-repo
 
 docker pull $REPO:$IMAGE_TAG
