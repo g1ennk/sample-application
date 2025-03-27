@@ -34,7 +34,6 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          cd backend
           chmod +x gradlew
           ./gradlew clean build -x test
 
@@ -54,7 +53,6 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          cd backend
           ECR_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t $ECR_URI:${{ steps.vars.outputs.IMAGE_TAG }} \
@@ -63,7 +61,6 @@ jobs:
 
       - name: Create Deployment Package
         run: |
-          cd ..
           mkdir -p deploy
           echo "${{ steps.vars.outputs.IMAGE_TAG }}" > deploy/image_tag.txt
           cp appspec.yml deploy/
