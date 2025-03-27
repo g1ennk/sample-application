@@ -66,7 +66,7 @@ jobs:
           mkdir -p deploy
           echo "${{ steps.vars.outputs.IMAGE_TAG }}" > deploy/image_tag.txt
           cp appspec.yml deploy/
-          cp ../scripts/* deploy/
+          cp scripts/* deploy/
           cd deploy && zip -r ../deploy.zip . && cd ..
 
       - name: Upload to S3
