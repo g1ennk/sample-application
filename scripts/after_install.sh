@@ -1,7 +1,11 @@
 #!/bin/bash
-echo "Logging in to Amazon ECR..."
+echo "Stopping existing container if running..."
+CONTAINER_ID=$(docker ps -q --filter "name=weekly-backend")
 
-aws ecr get-login-password --region ap-northeast-2 \
-| docker login --username AWS --password-stdin 221082195716.dkr.ecr.ap-northeast-2.amazonaws.com
+if [ ! -z "$CONTAINER_ID" ]; then
+  docker stop $CONTAINER_ID
+  docker rm $CONTAINER_ID
+fi
 
-docker pull 221082195716.dkr.ecr.ap-northeast-2.amazonaws.com/weekly-repo:latest
+echo "Removing old Docker image..."
+docker rmi 221082195716.dkr.ecr.ap-northeast-2.amazonaws.com/weekly-repo:latest || true

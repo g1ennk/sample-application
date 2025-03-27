@@ -11,6 +11,11 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+
     steps:
       # 1️⃣ GitHub Repository 코드 체크아웃
       - name: Checkout Repository
@@ -47,7 +52,6 @@ jobs:
           cd backend
           IMAGE_TAG=$(git rev-parse --short HEAD)  # Git SHA 기반 버전 생성
           ECR_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}
-            
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t $ECR_URI:$IMAGE_TAG \
             -t $ECR_URI:latest \
@@ -57,6 +61,7 @@ jobs:
       - name: Create Deployment Package
         run: |
           mkdir -p deploy
+          echo $IMAGE_TAG > deploy/image_tag.txt
           cp appspec.yml deploy/
           cp -r scripts deploy/  # 스크립트 폴더 포함
           cp -r backend/build/libs/*.jar deploy/  # Spring Boot JAR 포함
@@ -67,14 +72,14 @@ jobs:
       # 8️⃣ ZIP 파일을 S3에 업로드
       - name: Upload to S3
         run: |
-          aws s3 cp deploy.zip s3://weekly-deploy-bucket/deploy.zip
+          aws s3 cp deploy.zip s3://weekly-deployment-bucket/deploy.zip
 
       # 9️⃣ AWS CodeDeploy로 배포 실행
       - name: Deploy with AWS CodeDeploy
         run: |
           aws deploy create-deployment \
             --application-name weekly-app \
-            --deployment-group-name weekly-app-group \
-            --revision "revisionType=S3,s3Location={bucket=weekly-deploy-bucket,key=deploy.zip,bundleType=zip}" \
+            --deployment-group-name weekly-deployment-group \
+            --revision "revisionType=S3,s3Location={bucket=weekly-deployment-bucket,key=deploy.zip,bundleType=zip}" \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --region ${{ secrets.AWS_REGION }}
