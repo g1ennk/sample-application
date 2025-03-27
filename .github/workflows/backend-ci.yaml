@@ -57,8 +57,10 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t $ECR_URI:${{ steps.vars.outputs.IMAGE_TAG }} \
             -t $ECR_URI:latest \
-            -f backend/Dockerfile ./backend \
-            --push .
+            -f backend/Dockerfile \
+            --push \
+            ./backend
+
 
       - name: Create Deployment Package
         run: |
