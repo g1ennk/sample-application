@@ -71,7 +71,7 @@ jobs:
           cp scripts/start.sh deploy/
           cp scripts/stop.sh deploy/
           cp scripts/validate.sh deploy/
-          cd deploy && zip -r ../deploy.zip . && cd ..
+          zip -r deploy.zip deploy/*  
 
       - name: Upload to S3
         run: |
