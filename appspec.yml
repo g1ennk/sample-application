@@ -2,7 +2,13 @@ version: 0.0
 os: linux
 
 files:
-  - source: scripts/
+  - source: before.sh
+    destination: /home/ubuntu
+  - source: start.sh
+    destination: /home/ubuntu
+  - source: stop.sh
+    destination: /home/ubuntu
+  - source: validate.sh
     destination: /home/ubuntu
   - source: image_tag.txt
     destination: /home/ubuntu
