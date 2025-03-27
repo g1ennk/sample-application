@@ -8,4 +8,4 @@ if [ ! -z "$CONTAINER_ID" ]; then
 fi
 
 echo "Removing old Docker image..."
-docker rmi g1enn/weekly-backend-app:latest || true
+docker rmi g1enn/weekly-repo:latest || true

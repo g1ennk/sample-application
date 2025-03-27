@@ -46,10 +46,12 @@ jobs:
         run: |
           cd backend
           IMAGE_TAG=$(git rev-parse --short HEAD)  # Git SHA 기반 버전 생성
+          ECR_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}
+            
           docker buildx build --platform linux/amd64,linux/arm64 \
-            -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG \
+            -t $ECR_URI:$IMAGE_TAG \
             -t $ECR_URI:latest \
-            --push .
+            --push .  
 
       # 7️⃣ 배포 ZIP 파일 생성
       - name: Create Deployment Package
