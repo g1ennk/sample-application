@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "[ApplicationStart] Cleaning up existing container (if any)..."
+docker stop weekly-backend 2>/dev/null || true
+docker rm weekly-backend 2>/dev/null || true
+
 # ECR 로그인
 aws ecr get-login-password --region ap-northeast-2 | \
 docker login --username AWS --password-stdin 221082195716.dkr.ecr.ap-northeast-2.amazonaws.com
